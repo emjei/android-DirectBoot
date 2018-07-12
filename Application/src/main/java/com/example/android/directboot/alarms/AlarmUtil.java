@@ -45,12 +45,12 @@ public class AlarmUtil {
      * @param alarm the alarm to be scheduled
      */
     public void scheduleAlarm(Alarm alarm) {
-        Intent intent = new Intent(mContext, AlarmIntentService.class);
+        Intent intent = new Intent(mContext, AlarmBroadcastReceiver.class);
         Bundle extras = writeAlarm(alarm);
         intent.putExtras(extras);
 
         PendingIntent pendingIntent = PendingIntent
-            .getService(mContext, alarm.id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            .getBroadcast(mContext, alarm.id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         Calendar alarmTime = Calendar.getInstance();
         alarmTime.set(Calendar.MONTH, alarm.month);
         alarmTime.set(Calendar.DATE, alarm.date);
@@ -74,9 +74,9 @@ public class AlarmUtil {
      * @param alarm the alarm to be canceled.
      */
     public void cancelAlarm(Alarm alarm) {
-        Intent intent = new Intent(mContext, AlarmIntentService.class);
+        Intent intent = new Intent(mContext, AlarmBroadcastReceiver.class);
         PendingIntent pendingIntent = PendingIntent
-            .getService(mContext, alarm.id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            .getBroadcast(mContext, alarm.id, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         mAlarmManager.cancel(pendingIntent);
     }
 
@@ -99,22 +99,22 @@ public class AlarmUtil {
     }
 
     public static Alarm readAlarm(Bundle extras) {
-        int id = extras.getInt(AlarmIntentService.KEY_ALARM_ID);
-        int month = extras.getInt(AlarmIntentService.KEY_ALARM_MONTH);
-        int date = extras.getInt(AlarmIntentService.KEY_ALARM_DATE);
-        int hour = extras.getInt(AlarmIntentService.KEY_ALARM_HOUR);
-        int minute = extras.getInt(AlarmIntentService.KEY_ALARM_MINUTE);
+        int id = extras.getInt(AlarmBroadcastReceiver.KEY_ALARM_ID);
+        int month = extras.getInt(AlarmBroadcastReceiver.KEY_ALARM_MONTH);
+        int date = extras.getInt(AlarmBroadcastReceiver.KEY_ALARM_DATE);
+        int hour = extras.getInt(AlarmBroadcastReceiver.KEY_ALARM_HOUR);
+        int minute = extras.getInt(AlarmBroadcastReceiver.KEY_ALARM_MINUTE);
 
         return new Alarm(id, month, date, hour, minute);
     }
 
     public static Bundle writeAlarm(Alarm alarm){
         Bundle extras = new Bundle();
-        extras.putInt(AlarmIntentService.KEY_ALARM_ID, alarm.id);
-        extras.putInt(AlarmIntentService.KEY_ALARM_MONTH, alarm.month);
-        extras.putInt(AlarmIntentService.KEY_ALARM_DATE, alarm.date);
-        extras.putInt(AlarmIntentService.KEY_ALARM_HOUR, alarm.hour);
-        extras.putInt(AlarmIntentService.KEY_ALARM_MINUTE, alarm.minute);
+        extras.putInt(AlarmBroadcastReceiver.KEY_ALARM_ID, alarm.id);
+        extras.putInt(AlarmBroadcastReceiver.KEY_ALARM_MONTH, alarm.month);
+        extras.putInt(AlarmBroadcastReceiver.KEY_ALARM_DATE, alarm.date);
+        extras.putInt(AlarmBroadcastReceiver.KEY_ALARM_HOUR, alarm.hour);
+        extras.putInt(AlarmBroadcastReceiver.KEY_ALARM_MINUTE, alarm.minute);
 
         return extras;
     }

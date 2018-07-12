@@ -1,38 +1,21 @@
-/*
-* Copyright 2016 The Android Open Source Project
-*
-* Licensed under the Apache License, Version 2.0 (the "License");
-* you may not use this file except in compliance with the License.
-* You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-* Unless required by applicable law or agreed to in writing, software
-* distributed under the License is distributed on an "AS IS" BASIS,
-* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-* See the License for the specific language governing permissions and
-* limitations under the License.
-*/
-
 package com.example.android.directboot.alarms;
 
-import com.example.android.directboot.R;
-
-import android.app.IntentService;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.provider.Settings;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 
-/**
- * IntentService to set off an alarm.
- */
-public class AlarmIntentService extends IntentService {
+import com.example.android.directboot.R;
 
-    public static final String ALARM_WENT_OFF_ACTION = AlarmIntentService.class.getName()
+public class AlarmBroadcastReceiver extends BroadcastReceiver {
+
+    public static final String ALARM_WENT_OFF_ACTION = AlarmBroadcastReceiver.class.getName()
             + ".ALARM_WENT_OFF";
 
 
@@ -46,19 +29,18 @@ public class AlarmIntentService extends IntentService {
 
     public static final String KEY_ALARM_MINUTE = "alarm_minute";
 
-    public AlarmIntentService() {
-        super(AlarmIntentService.class.getName());
-    }
-
     @Override
-    protected void onHandleIntent(Intent intent) {
-        Context context = getApplicationContext();
+    public void onReceive(Context context, Intent intent) {
         Alarm alarm = AlarmUtil.readAlarm(intent.getExtras());
 
         NotificationManager notificationManager = context
                 .getSystemService(NotificationManager.class);
+
+        String channelId = "default";
+        initChannels(notificationManager, channelId);
+
         NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(context)
+                new NotificationCompat.Builder(context, channelId)
                         .setSmallIcon(R.drawable.ic_fbe_notification)
                         .setCategory(Notification.CATEGORY_ALARM)
                         .setSound(Settings.System.DEFAULT_ALARM_ALERT_URI)
@@ -71,5 +53,19 @@ public class AlarmIntentService extends IntentService {
         Intent wentOffIntent = new Intent(ALARM_WENT_OFF_ACTION);
         wentOffIntent.putExtras(AlarmUtil.writeAlarm(alarm));
         LocalBroadcastManager.getInstance(context).sendBroadcast(wentOffIntent);
+    }
+
+    private static void initChannels(NotificationManager notificationManager, String channelId) {
+        if (Build.VERSION.SDK_INT < 26) {
+            return;
+        }
+
+        NotificationChannel channel = new NotificationChannel(
+                channelId,
+                "DirectBoot",
+                NotificationManager.IMPORTANCE_HIGH
+        );
+
+        notificationManager.createNotificationChannel(channel);
     }
 }

@@ -18,7 +18,7 @@ package com.example.android.directboot;
 
 import com.example.android.directboot.alarms.Alarm;
 import com.example.android.directboot.alarms.AlarmAdapter;
-import com.example.android.directboot.alarms.AlarmIntentService;
+import com.example.android.directboot.alarms.AlarmBroadcastReceiver;
 import com.example.android.directboot.alarms.AlarmStorage;
 import com.example.android.directboot.alarms.AlarmUtil;
 
@@ -66,7 +66,7 @@ public class SchedulerFragment extends Fragment {
         mAlarmWentOffBroadcastReceiver = new AlarmWentOffReceiver();
         LocalBroadcastManager.getInstance(getActivity())
                 .registerReceiver(mAlarmWentOffBroadcastReceiver,
-                        new IntentFilter(AlarmIntentService.ALARM_WENT_OFF_ACTION));
+                        new IntentFilter(AlarmBroadcastReceiver.ALARM_WENT_OFF_ACTION));
     }
 
     @Override

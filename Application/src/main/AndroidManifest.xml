@@ -48,8 +48,8 @@
             </intent-filter>
         </receiver>
 
-        <service android:name=".alarms.AlarmIntentService"
+        <receiver android:name=".alarms.AlarmBroadcastReceiver"
             android:exported="false"
-            android:directBootAware="true"/>
+            android:directBootAware="true" />
     </application>
 </manifest>
